@@ -10,6 +10,7 @@ class EnumCheckResults:
     """
 
     def __init__(self):
+
         # Create a container to hold the overrun details. This will be
         # an array. Each element of the array is a tuple containing the
         # the following:
@@ -63,6 +64,7 @@ class EnumCheckResults:
             print("       bits=%d, max_value=%d, signed=%d" % (i[1], i[2], i[3]))
 
     def report_errors(self):
+
         print("Enum Check Errors: (%d)" % (self.overruns + self.key_errors))
         print("===========================")
         print("    missing key: %d" % (self.key_errors))
@@ -73,6 +75,7 @@ class EnumCheckResults:
 
 class EnumInfo:
     def __init__(self, type_name):
+
         self.signed = False
         self.name = type_name
 
@@ -89,6 +92,7 @@ class EnumInfo:
         return self.max_abs_value
 
     def check_max_value(self, value):
+
         if value < 0:
             self.signed = True
 
@@ -96,6 +100,7 @@ class EnumInfo:
             self.max_abs_value = abs(value)
 
     def set_bits(self, bits):
+
         if bits in (8, 16, 32):
             self.bits = bits
         else:
@@ -124,11 +129,13 @@ def cmd_dict_enum_size_check(filename, verbose=False):
     fd = open(filename)
 
     for line in fd:
+
         # Build a map for each enumeration. The key is the name of the
         # enumeration. The value is the highest numeric value of all
         # the items.
 
         if line.find("<enum_typedef ") != -1:
+
             fields = line.split('"')
 
             # The key is the type name.
@@ -142,6 +149,7 @@ def cmd_dict_enum_size_check(filename, verbose=False):
             # only positive values.
 
             for values in fd:
+
                 if values.find("numeric_value=") != -1:
                     fields = values.split('"')
                     value = int(fields[1])
@@ -164,6 +172,7 @@ def cmd_dict_enum_size_check(filename, verbose=False):
         # for the enumeration representation.
 
         if line.find("enum name=") != -1:
+
             fields = line.split('"')
 
             # The key is the type name.
@@ -191,11 +200,13 @@ def cmd_dict_enum_size_check(filename, verbose=False):
         print("Done gathering %d usages." % (len(enum_info)))
 
     for type in enums.keys():
+
         # Calculate the allowed maximum value for this type based
         # on the bit length that was specified. We want the maximum
         # number that can be represented in those bits.
 
         try:
+
             e = enum_info[type]
 
             signed = 0
@@ -245,6 +256,7 @@ def cmd_dict_enum_size_check(filename, verbose=False):
 
 
 if __name__ == "__main__":
+
     filename = "../../fsw/msl/currentxml/command.xml"
 
     status = cmd_dict_enum_size_check(filename, True)

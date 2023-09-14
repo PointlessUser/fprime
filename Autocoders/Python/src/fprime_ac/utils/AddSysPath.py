@@ -18,6 +18,7 @@ import sys
 ##    1 if okay, -1 if path does not exist, 0 if already in the variable
 ##
 def AddSysPath(new_path):
+
     # Avoid adding nonexistent paths
     if not os.path.exists(new_path):
         return -1
@@ -44,6 +45,7 @@ def AddSysPath(new_path):
 
 
 if __name__ == "__main__":
+
     print("Before:")
     for item in sys.path:
         print(item)

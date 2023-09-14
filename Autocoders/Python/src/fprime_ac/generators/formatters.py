@@ -64,6 +64,7 @@ class CommentFormatters:
         code_flag = False
 
         for line in line_list:
+
             if "@code" in line and not code_flag:
                 leading_spaces = line.find("@code")
                 new_line_list.append(line.strip())
@@ -142,6 +143,7 @@ class CommentFormatters:
         stack = [word for word in text.replace("\n", " ").split(" ") if word]
 
         while stack:
+
             line = ""
 
             while stack:
@@ -189,6 +191,7 @@ class CommentFormatters:
             return
 
         for index in range(start, end):
+
             line = line_list[index]
 
             if "@code" == line.strip():
@@ -282,6 +285,7 @@ class CommentFormatters:
             return
 
         for index in range(start, end):
+
             line = line_list[index]
 
             if "@code" == line.strip():
@@ -870,6 +874,7 @@ class Formatters:
 
         # Get the simple case out of the way.
         if len(args) == 0:
+
             if proto:
                 function_str = name.strip() + "();"
             else:
@@ -885,6 +890,7 @@ class Formatters:
         type_list = []
 
         for arg in args:
+
             a = self.argNameConvert(arg).split()
 
             # In cases where the user specified an argument with a pointer(*),
@@ -909,6 +915,7 @@ class Formatters:
                     type_list.append(a[0])
 
         if len(args) == 1:
+
             if proto:
                 function_str = name.strip() + "(" + a[0] + " " + a[1] + ");"
             else:
@@ -966,6 +973,7 @@ class Formatters:
 
         # Get the no argument case out of the way -- just add void argument.
         if len(args) == 0:
+
             format_func = fname + "(void)"
 
             if proto:
@@ -1199,6 +1207,7 @@ class Formatters:
         str_list = []
 
         if len(type_list) > 0:
+
             max_type_length = max(list(map(len, type_list)))
 
             for i, type in enumerate(type_list):
@@ -1401,6 +1410,7 @@ class Formatters:
                 )
 
             elif type == "REPEAT":
+
                 type = self.msgTypedefName(module, name, "")
                 array_max = range_list[0][-1]
                 array_len = id + "_size"

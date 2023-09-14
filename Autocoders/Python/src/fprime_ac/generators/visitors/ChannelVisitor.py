@@ -46,8 +46,6 @@ except ImportError:
 # Global logger init. below.
 PRINT = logging.getLogger("output")
 DEBUG = logging.getLogger("debug")
-
-
 #
 # Module class or classes go here.
 class ChannelVisitor(AbstractVisitor.AbstractVisitor):
