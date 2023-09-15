@@ -152,7 +152,6 @@ class Packet:
     # previous packet (if any)
 
     def packet(self, line):
-
         self.packet_complete()
         self.init()
 
@@ -172,7 +171,7 @@ class Packet:
             he.m_type = "HEADER_FIELD_ID"
             s = line[4].strip()
             if not s.isdigit():
-                self.err_msg("Illegal value for number of bits: '" + s + "'")
+                self.err_msg(f"Illegal value for number of bits: '{s}'")
             he.m_bits = int(s)
             self.m_bit_index += he.m_bits
         elif kw == "time":
@@ -185,7 +184,7 @@ class Packet:
             he.m_type = "HEADER_FIELD_SEQUENCE"
             s = line[4].strip()
             if not s.isdigit():
-                self.err_msg("Illegal value for number of bits: '" + s + "'")
+                self.err_msg(f"Illegal value for number of bits: '{s}'")
             he.m_bits = int(s)
             self.m_bit_index += he.m_bits
         elif kw == "field":
@@ -195,18 +194,18 @@ class Packet:
 
             s = line[2].strip()
             if not s.isdigit():
-                self.err_msg("Illegal value for ID: '" + s + "'")
+                self.err_msg(f"Illegal value for ID: '{s}'")
             he.m_id = int(s)
 
             s = line[4].strip()
             if not s.isdigit():
-                self.err_msg("Illegal value for number of bits: '" + s + "'")
+                self.err_msg(f"Illegal value for number of bits: '{s}'")
             he.m_bits = int(s)
             self.m_bit_index += he.m_bits
             self.num_header_general_fields += 1
 
         else:
-            self.err_msg("Illegal keyword for header: '" + line[1] + "'")
+            self.err_msg(f"Illegal keyword for header: '{line[1]}'")
 
         if len(line) > 5:
             he.m_comment = line[5]
@@ -234,17 +233,16 @@ class Packet:
 
         s = line[2].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for identifier: '" + s + "'")
+            self.err_msg(f"Illegal value for identifier: '{s}'")
         self.m_id = int(s)
         if self.m_id < 0:
-            self.err_msg("Negative value for identifier: '" + line[2] + "'")
+            self.err_msg(f"Negative value for identifier: '{line[2]}'")
         if len(line) > 5:
             self.m_id_comment = line[5]
 
     # Process and save an item record
 
     def item(self, line):
-
         self.m_num_variable_fields += 1
         it = Item()
 
@@ -262,14 +260,14 @@ class Packet:
 
         s = line[2].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for identifier: '" + s + "'")
+            self.err_msg(f"Illegal value for identifier: '{s}'")
         it.m_id = int(s)
 
         it.m_data_type = line[3].strip()
 
         s = line[4].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
         it.m_bits = int(s)
 
         self.m_bit_index += it.m_bits
@@ -293,10 +291,10 @@ class Packet:
 
         s = line[4].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
         it.m_bits = int(s)
         if it.m_bits < 1:
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
 
         self.m_bit_index += it.m_bits
 
@@ -308,7 +306,6 @@ class Packet:
     # Process and save an align record
 
     def align(self, line):
-
         it = Item()
 
         it.m_bit_start = self.m_bit_index
@@ -320,13 +317,13 @@ class Packet:
 
         s = line[1].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
         bits = int(s)
         if bits not in (8, 16, 32, 64):
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
 
         if self.m_bit_index % bits:
-            bits = bits - (self.m_bit_index % bits)
+            bits -= self.m_bit_index % bits
         else:
             return  # Already aligned
         it.m_bits = bits
@@ -341,7 +338,6 @@ class Packet:
     # Process and save a constant record
 
     def constant(self, line):
-
         self.m_num_fixed_fields += 1
         it = Item()
 
@@ -362,30 +358,28 @@ class Packet:
         it.m_data_type = line[2].strip()
         it.m_data_type = it.m_data_type.lower()
         if it.m_data_type not in ("integer", "float", "text"):
-            self.err_msg("Invalid date type: '" + it.m_data_type + "'")
+            self.err_msg(f"Invalid date type: '{it.m_data_type}'")
 
         it.m_constant_value = line[3]
         if it.m_data_type == "integer":
             it.m_constant_value = it.m_constant_value.strip()
             if not it.m_constant_value.isdigit():
-                self.err_msg("Invalid numeric value: '" + it.m_constant_value + "'")
+                self.err_msg(f"Invalid numeric value: '{it.m_constant_value}'")
             it.m_constant_value = int(it.m_constant_value)
         elif it.m_data_type == "float":
             it.m_constant_value = it.m_constant_value.strip()
             try:
                 f = float(it.m_constant_value)
             except ValueError:
-                self.err_msg(
-                    "Invalid floating point value: '" + it.m_constant_value + "'"
-                )
+                self.err_msg(f"Invalid floating point value: '{it.m_constant_value}'")
             it.m_constant_value = f
 
         s = line[4].strip()
         if not s.isdigit():
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
         bits = int(s)
         if bits < 1:
-            self.err_msg("Illegal value for number of bits: '" + s + "'")
+            self.err_msg(f"Illegal value for number of bits: '{s}'")
 
         it.m_bits = bits
 
@@ -400,7 +394,6 @@ class Packet:
     # the packet
 
     def packet_complete(self):
-
         global tlm_input_line_num
         global tlm_packet_list
         global tlm_max_packet_bytes
@@ -420,9 +413,8 @@ class Packet:
                 self.m_max_field_bits = field.m_bits
 
         for item in self.m_item_list:
-            if not item.m_is_reserve and not item.m_is_constant:
-                if item.m_bits > self.m_max_field_bits:
-                    self.m_max_field_bits = item.m_bits
+            if not item.m_is_reserve and not item.m_is_constant and item.m_bits > self.m_max_field_bits:
+                self.m_max_field_bits = item.m_bits
 
         if verbose:
             if tlm_duration is not None:
@@ -431,10 +423,10 @@ class Packet:
                 print("Run or Sample Period (in hz. only): %f" % tlm_period)
 
             if self.m_freq is not None:
-                print("Packet frequency (Hz.): " + str(self.m_freq))
+                print(f"Packet frequency (Hz.): {str(self.m_freq)}")
 
             if self.m_offset is not None:
-                print("Packet offset: " + str(self.m_offset))
+                print(f"Packet offset: {str(self.m_offset)}")
 
             print(
                 "packet size in bits: "
@@ -520,7 +512,6 @@ class CsvLine:
     # process() is called with a single line already tokenized as a list
 
     def process(self, line):
-
         global tlm_input_line_num
 
         if not line:
@@ -539,11 +530,10 @@ class CsvLine:
         if kw in self.keywords:
             self.keywords[kw](line)
         else:
-            print("Invalid keyword '" + line[0] + "' at line ", tlm_input_line_num)
+            print(f"Invalid keyword '{line[0]}' at line ", tlm_input_line_num)
             exit(1)
 
     def finish(self):
-
         self.packet.packet_complete()
 
 
@@ -591,9 +581,8 @@ def sched_cycle_ids_max(max_cycle):
 
         if cycle_offset is not None:
             for i in range(max_cycle):
-                if i % cycle_offset == 0:
-                    if (i + offset) < max_cycle:
-                        cycle_max_list[i + offset] += 1
+                if i % cycle_offset == 0 and (i + offset) < max_cycle:
+                    cycle_max_list[i + offset] += 1
         # print p.m_id, p.m_freq, p.m_offset
         # print cycle_offset
     # print cycle_max_list
@@ -605,7 +594,7 @@ def sched_cycle_ids(max_cycle):
     Return a list of cycle slots where each slot is a list of IDs assigned in that slot.
     Note the list returned by sched_cycle_ids_max is the number of IDs per cycle slot.
     """
-    cycle_id_list = [list() for _ in range(max_cycle)]
+    cycle_id_list = [[] for _ in range(max_cycle)]
     cycle_offset = None
 
     if tlm_period is None:
@@ -620,9 +609,8 @@ def sched_cycle_ids(max_cycle):
 
         if cycle_offset is not None:
             for i in range(max_cycle):
-                if i % cycle_offset == 0:
-                    if (i + offset) < max_cycle:
-                        cycle_id_list[i + offset].append(p.m_id)
+                if i % cycle_offset == 0 and (i + offset) < max_cycle:
+                    cycle_id_list[i + offset].append(p.m_id)
 
         # print p.m_id, p.m_freq, p.m_offset
     for id in cycle_id_list:
@@ -644,10 +632,7 @@ def sched_id_arr_size(cycle_id_list):
     id_list_size = 0
     for l in cycle_id_list:
         s = len(l)
-        if s == 0:
-            id_list_size += 1
-        else:
-            id_list_size += s
+        id_list_size += 1 if s == 0 else s
     return id_list_size
 
 
@@ -678,19 +663,12 @@ def output_cpp(output_file, template_file):
     # Create ID to channel mapping
     t.tlm_cycle_id_arr_size = sched_id_arr_size(t.tlm_cycle_id_list)
     t.tlm_max_packet_bytes = tlm_max_packet_bytes
-    t.tlm_max_num_chan = sum([pkt.m_chan is not None for pkt in tlm_packet_list])
+    t.tlm_max_num_chan = sum(pkt.m_chan is not None for pkt in tlm_packet_list)
     # Create duration and period values
-    t.tlm_max_num_freq = sum([pkt.m_freq is not None for pkt in tlm_packet_list])
-    if tlm_duration is not None:
-        t.tlm_duration = tlm_duration
-    else:
-        t.tlm_duration = -1.0
+    t.tlm_max_num_freq = sum(pkt.m_freq is not None for pkt in tlm_packet_list)
+    t.tlm_duration = tlm_duration if tlm_duration is not None else -1.0
     #
-    if tlm_period is not None:
-        t.tlm_period = tlm_period
-    else:
-        t.tlm_period = -1
-
+    t.tlm_period = tlm_period if tlm_period is not None else -1
     f = open(output_file, "w")
     print(t, file=f)
 
@@ -710,7 +688,6 @@ def output(cpp_output_file, template_file):
 
 
 def main():
-
     global verbose
 
     parser = argparse.ArgumentParser(description="Process a telemetry definition file")
